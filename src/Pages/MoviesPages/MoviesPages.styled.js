@@ -22,7 +22,7 @@ export const FormSearch = styled.form`
 
 export const InputSearch = styled.input`
   flex: 1;
-  height: 30px;
+  height: 25px;
   font-family: 'Prompt', sans-serif;
   font-size: 20px;
   font-weight: 400;
