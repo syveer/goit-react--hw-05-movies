@@ -1,0 +1,64 @@
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import { fetchCredits } from '../Api/Api';
+import {
+  ActorName,
+  Character,
+  ItemCast,
+  Profile,
+  WrapCast,
+} from './Cast.styled';
+import { Loading } from '../Loader/Loader';
+
+const defaultImg = 'https://www.istockphoto.com/ro/fotografii/film-slate';
+
+export default function Cast() {
+  const { movieId } = useParams();
+  const [cast, setCast] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!movieId) return;
+    const getCast = async () => {
+      try {
+        setIsLoading(true);
+        const data = await fetchCredits(movieId);
+        setCast(data.cast);
+      } catch (error) {
+        error(error.message);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getCast();
+  }, [movieId]);
+
+  if (!cast) return;
+
+  const showCast = Array.isArray(cast) && cast.length;
+
+  return (
+    <>
+      {isLoading && <Loading />}
+      <WrapCast>
+        {showCast &&
+          cast.map(({ id, profile_path, name, character }) => {
+            return (
+              <ItemCast key={id}>
+                <Profile
+                  src={
+                    profile_path
+                      ? `https://image.tmdb.org/t/p/w500/${profile_path}`
+                      : defaultImg
+                  }
+                  alt={name}
+                />
+                <ActorName>{name}</ActorName>
+                <Character>{character}</Character>
+              </ItemCast>
+            );
+          })}
+      </WrapCast>
+    </>
+  );
+}
